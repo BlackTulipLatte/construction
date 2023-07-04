@@ -1,11 +1,9 @@
 import { useState } from "react";
-import "./App.css";
 import LandingPage from "./pages/LandingPage";
 import Saved from "./pages/Saved";
 import Search from "./pages/Search";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
-
 import Navbar from "./components/Navbar";
 import { Route, Routes } from "react-router-dom";
 

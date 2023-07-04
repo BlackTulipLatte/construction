@@ -1,6 +1,9 @@
 import React from 'react'
 
-const Saved = () => {
+const Saved = ( {isLoggedIn} ) => {
+
+
+    
   return (
     <div>Saved</div>
   )
