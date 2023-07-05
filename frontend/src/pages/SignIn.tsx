@@ -4,9 +4,8 @@ import axios from "axios";
 import { sha256 } from 'js-sha256';
 import { toast } from "react-toastify";
 
-const SignIn = () => {
+const SignIn = ( {callBackLogin} ) => {
 
-  const [userData, setUserData] = useState([]);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -18,16 +17,32 @@ const SignIn = () => {
     // Prevent default form submission behavior
     event.preventDefault(); 
 
-    // Check if email and password conform to the standard
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
+    // Hash the password
+    const hashedPassword = sha256(password);
+    console.log(hashedPassword)
+    setPassword("");
 
-    if(!emailRegex.test(email)){
-      toast.error("Invalid email address");
-      return;
+    // Send a GET request to the backend to check if the user exists
+    try {
+      const response = await axios.get('http://localhost:3000/users', {
+        params: {
+          email: email,
+          password: hashedPassword,
+        },
+      });
+    
+      const { exists } = response.data;
+
+      if (exists) {
+        toast.success("User exists");
+      } else {
+        toast.error("User does not exist");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("An error occurred");
     }
-
-    console.log(sha256("hello"));
+    
   }
 
   return(
@@ -64,6 +79,7 @@ const SignIn = () => {
                   className="block w-full px-6 py-3 text-black bg-white border border-gray-200 rounded-full appearance-none placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
                   placeholder="******"
                   autoComplete="off"
+                  type="password"
                   onChange = {(e) => setPassword(e.target.value)}
                 />
               </div>

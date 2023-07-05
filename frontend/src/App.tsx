@@ -14,13 +14,18 @@ function App() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [userInfo, setUserInfo] = useState({});
 
+  const callBackLogin = (isLoggedIn) => {
+    setLoggedIn(isLoggedIn);
+  };
+
+
   return (
     <>
       <Navbar/>
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/signup" element={<SignUp />} />
-        <Route path="/signin" element={<SignIn />} />
+        <Route path="/signin" element={<SignIn callBackLogin={callBackLogin} />} />
         <Route path="/" element={<LandingPage />} />
       </Routes>
       <ToastContainer />
