@@ -4,7 +4,7 @@ import axios from "axios";
 import { sha256 } from 'js-sha256';
 import { toast } from "react-toastify";
 
-const SignIn = ( {callBackLogin} ) => {
+const SignIn = ( {callBackLogin, callBackUserInfo} ) => {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -19,29 +19,30 @@ const SignIn = ( {callBackLogin} ) => {
 
     // Hash the password
     const hashedPassword = sha256(password);
-    console.log(hashedPassword)
-    setPassword("");
+    console.log(hashedPassword);
 
     // Send a GET request to the backend to check if the user exists
-    try {
-      const response = await axios.get('http://localhost:3000/users', {
-        params: {
-          email: email,
-          password: hashedPassword,
-        },
-      });
-    
-      const { exists } = response.data;
+    axios
+      .post("http://localhost:3000/login", { email, password: hashedPassword})
+      .then((response) => {
+        setPassword("");
+        setEmail("");
+        console.log(response.data);
+        // The response will contain { exists: true } if the email exists in the database,
+        // or { exists: false, message: 'User added to the database.' } if the email was added.
+        // Modify the state of the webpage to reflect loggedin status
+        if (response.data.exists) {
+          callBackLogin(true);
+          toast.success("Logged in successfully!");
+        }  
+        else{
+          toast.error("Incorrect email or password.");
+        } 
 
-      if (exists) {
-        toast.success("User exists");
-      } else {
-        toast.error("User does not exist");
-      }
-    } catch (error) {
-      console.error(error);
-      toast.error("An error occurred");
-    }
+      })
+      .catch((error) => {
+        console.error(error);
+      });
     
   }
 
@@ -68,6 +69,7 @@ const SignIn = ( {callBackLogin} ) => {
                   placeholder="email@address.com"
                   autoComplete="off"
                   onChange = {(e) => setEmail(e.target.value)}
+                  value={email}
                 />
               </div>
               <div className="col-span-full">
@@ -81,6 +83,7 @@ const SignIn = ( {callBackLogin} ) => {
                   autoComplete="off"
                   type="password"
                   onChange = {(e) => setPassword(e.target.value)}
+                  value={password}
                 />
               </div>
 

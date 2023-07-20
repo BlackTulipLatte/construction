@@ -21,7 +21,7 @@ const Navbar = () => {
             href="/"
           >
             <span className="lg:text-lg uppercase focus:ring-0">
-              vacation.io
+              construction.io
             </span>
           </a>
           <button

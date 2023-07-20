@@ -18,10 +18,10 @@ const Hero = () => {
         <div className="justify-center w-full text-center lg:p-10 max-auto">
           <div className="justify-center w-full mx-auto">
             <p className="mt-8 text-5xl font-medium tracking-tighter text-black">
-              Travelling made easy.
+              Construction made easy.
             </p>
             <p className="max-w-xl mx-auto mt-4 text-lg tracking-tight text-gray-600">
-              Discover serenity: Craft your ideal getaway collaboratively
+              Collaborate on projects
             </p>
           </div>
           <div className="flex flex-col items-center justify-center max-w-xl gap-3 mx-auto mt-10 lg:flex-row">
