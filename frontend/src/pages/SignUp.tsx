@@ -17,6 +17,8 @@ const SignUp = () => {
     axios
       .post("http://localhost:3000/users", { email, password: hashedPassword})
       .then((response) => {
+        setPassword("");
+        setEmail("");
         console.log(response.data);
         // The response will contain { exists: true } if the email exists in the database,
         // or { exists: false, message: 'User added to the database.' } if the email was added.
@@ -26,7 +28,6 @@ const SignUp = () => {
       .catch((error) => {
         console.error(error);
       });
-      setPassword("");
   }
 
   return (

@@ -25,25 +25,26 @@ const SignIn = ( {callBackLogin, callBackUserInfo} ) => {
     axios
       .post("http://localhost:3000/login", { email, password: hashedPassword})
       .then((response) => {
-        setPassword("");
-        setEmail("");
         console.log(response.data);
         // The response will contain { exists: true } if the email exists in the database,
         // or { exists: false, message: 'User added to the database.' } if the email was added.
         // Modify the state of the webpage to reflect loggedin status
         if (response.data.exists) {
           callBackLogin(true);
+          callBackUserInfo(email);
+          setPassword("");
+          setEmail("");
           toast.success("Logged in successfully!");
         }  
         else{
           toast.error("Incorrect email or password.");
+          setPassword("");
+          setEmail("");
         } 
-
       })
       .catch((error) => {
         console.error(error);
       });
-    
   }
 
   return(

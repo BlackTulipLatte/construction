@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const Navbar = () => {
+const Navbar = ({ isLoggedIn }) => {
   const [open, setOpen] = useState(true);
 
   // Name: toggleMenu
@@ -11,9 +11,11 @@ const Navbar = () => {
     setOpen(!open);
   };
 
-  
   return (
-    <div className="w-full mx-auto bg-white border-b 2xl:max-w-7xl" style={{ maxWidth: '100%', marginLeft: 'auto', marginRight: 'auto' }}>
+    <div
+      className="w-full mx-auto bg-white border-b 2xl:max-w-7xl"
+      style={{ maxWidth: "100%", marginLeft: "auto", marginRight: "auto" }}
+    >
       <div className="relative flex flex-col w-full p-5 mx-auto bg-white md:items-center md:justify-between md:flex-row md:px-6 lg:px-8">
         <div className="flex flex-row items-center justify-between lg:justify-start">
           <a
@@ -77,12 +79,37 @@ const Navbar = () => {
             Saved
           </a>
           <div className="inline-flex items-center gap-2 list-none lg:ml-auto">
-            <button onClick={()=>{window.location.href = "signin";}} className="block px-4 py-2 mt-2 text-sm text-gray-500 md:mt-0 hover:text-blue-600 focus:outline-none focus:shadow-outline">
+
+
+            {isLoggedIn ? null : <button
+              onClick={() => {
+                window.location.href = "signin";
+              }}
+              className="block px-4 py-2 mt-2 text-sm text-gray-500 md:mt-0 hover:text-blue-600 focus:outline-none focus:shadow-outline"
+            >
               Sign in
-            </button>
-            <button onClick={()=>{window.location.href = "signup";}} className="inline-flex items-center justify-center px-4 py-2 text-sm font-semibold text-white bg-black rounded-full group focus:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 hover:bg-gray-700 active:bg-gray-800 active:text-white focus-visible:outline-black">
-              Sign up
-            </button>
+            </button>}
+
+            {/* Used to check login state */}
+            {isLoggedIn ? (
+              <button
+                onClick={() => {
+                  
+                }}
+                className="inline-flex items-center justify-center px-4 py-2 text-sm font-semibold text-white bg-black rounded-full group focus:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 hover:bg-gray-700 active:bg-gray-800 active:text-white focus-visible:outline-black"
+              >
+                Logout
+              </button>
+            ) : (
+              <button
+                onClick={() => {
+                  window.location.href = "signup";
+                }}
+                className="inline-flex items-center justify-center px-4 py-2 text-sm font-semibold text-white bg-black rounded-full group focus:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 hover:bg-gray-700 active:bg-gray-800 active:text-white focus-visible:outline-black"
+              >
+                Sign up
+              </button>
+            )}
           </div>
         </nav>
       </div>
