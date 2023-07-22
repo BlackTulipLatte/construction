@@ -1,10 +1,15 @@
 import React from "react";
-import { Route, Navigate, Outlet } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import useAuth from "./Auth"; // custom hook to check authentication
 
-const ProtectedRoute = () => {
+const ProtectedRoute = ({element}) => {
   const isAuthenticated = useAuth();
-  return isAuthenticated ? <Outlet /> : <Navigate to="/error" />;
+  if (isAuthenticated) {
+    return element;
+  } else {
+    // Redirect to the signin page if not authenticated
+    return <Navigate to="/signin" />;
+  }
 };
 
 export default ProtectedRoute;

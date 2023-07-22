@@ -75,7 +75,11 @@ const Trello = () => {
       {/* Board header */}
       <div className="flex flex-initial justify-between">
         <div className="flex items-center">
-          <h4 className="text-4xl text-black">Trello Board</h4>
+          <h4 className="text-4xl font-bold text-gray-600">Studio Board</h4>
+          <ChevronDownIcon
+            className="w-9 h-9 text-gray-500 rounded-full
+            p-1 bg-white ml-5 shadow-xl"
+          />
         </div>
 
         <ul className="flex space-x-3">
@@ -136,10 +140,11 @@ const Trello = () => {
                           ${snapshot.isDraggingOver && "bg-green-100"}`}
                         >
                           <span
-                            className="w-full h-1 inset-x-0 top-0"
+                            className="w-full h-1 bg-gradient-to-r from-pink-700 to-red-200
+                            absolute inset-x-0 top-0"
                           ></span>
                           <h4 className=" p-3 flex justify-between items-center mb-2">
-                            <span className="text-2xl text-black">
+                            <span className="text-2xl text-gray-600">
                               {board.name}
                             </span>
                             <DotsVerticalIcon className="w-5 h-5 text-gray-500" />

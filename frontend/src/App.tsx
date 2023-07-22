@@ -31,17 +31,15 @@ function App() {
         <Routes>
           <Route path="/" element={<LandingPage isLoggedIn={isLoggedIn} />} />
           <Route path="/about" element={<About isLoggedIn={isLoggedIn}/>} />
-          <Route path='/trello' element={<ProtectedRoute/>}>
-            <Route path='/trello' element={<Error/>}/>
-          </Route>
+          <Route path="/trello" element={<ProtectedRoute element={<Trello />} />} />
+          <Route path='/inventory' element={<ProtectedRoute element={<Inventory/>} />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/signin" element={<SignIn emailCallback={emailCallback}/>} />
-          <Route path="/error" element={<Error />} />
           <Route path="/*" element={<Error />} />
         </Routes>
       </main>
       <ToastContainer />
-      {location.pathname === "/" ? null : <Footer/> } {/* Render the footer only on the root path */}
+      {location.pathname === "/" ? null : <Footer/> } {/* Render the footer when not on root path */}
     </div>
   );
 }

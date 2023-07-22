@@ -1,10 +1,10 @@
 import React from "react";
 import { useState } from "react";
-
+import useAuth from "../../utils/Auth"; // custom hook to check authentication
 
 const Hero = ({ isLoggedIn }) => {
   const [test, setTest] = useState({});
-
+  const isAuthenticated = useAuth();
 
   return (
     <section
@@ -22,16 +22,16 @@ const Hero = ({ isLoggedIn }) => {
             </p>
           </div>
           <div className="flex flex-col items-center justify-center max-w-xl gap-3 mx-auto mt-10 lg:flex-row">
-            {isLoggedIn ? (
+            {isAuthenticated ? (
               <a
-                href="/signup"
+                href="/trello"
                 className="items-center justify-center w-full px-6 py-2.5 text-center text-white duration-200 bg-black border-2 border-black rounded-full nline-flex hover:bg-transparent hover:border-black hover:text-black focus:outline-none lg:w-auto focus-visible:outline-black text-sm focus-visible:ring-black"
               >
                 Get started
               </a>
             ) : (
               <a
-                href="/search"
+                href="/signin"
                 className="items-center justify-center w-full px-6 py-2.5 text-center text-white duration-200 bg-black border-2 border-black rounded-full nline-flex hover:bg-transparent hover:border-black hover:text-black focus:outline-none lg:w-auto focus-visible:outline-black text-sm focus-visible:ring-black"
               >
                 Get started
