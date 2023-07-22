@@ -1,5 +1,6 @@
 # constructionio
-Full stack construction management site (WIP).
-Frontend built with React, Typescript, and Tailwind.
-Backend built with Express.
-PostgreSql as the database.
+Full stack construction management site (WIP). </br>
+Frontend built with React, Typescript, and Tailwind. </br>
+Backend built with Express. </br>
+PostgreSql as the database. </br>
+JWT as user authentication.
