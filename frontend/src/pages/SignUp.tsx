@@ -7,9 +7,11 @@ const SignUp = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  async function handleSubmit(e) {
+  // handleSubmit: Handle form submission for sign in button
+  // event: Form submission event
+  // return: None
+  async function handleSubmit(e: { preventDefault: () => void; }) {
     e.preventDefault();
-    // Hash password
     const hashedPassword = sha256(password).toString();
     console.log(hashedPassword);
 
@@ -19,11 +21,6 @@ const SignUp = () => {
       .then((response) => {
         setPassword("");
         setEmail("");
-        console.log(response.data);
-        // The response will contain { exists: true } if the email exists in the database,
-        // or { exists: false, message: 'User added to the database.' } if the email was added.
-        // Modify the state of the webpage to reflect loggedin status
-
       })
       .catch((error) => {
         console.error(error);

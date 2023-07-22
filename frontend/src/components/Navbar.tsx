@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
-const Navbar = ({ isLoggedIn }) => {
+const Navbar = ({ isLoggedIn, emailCallback }) => {
   const [open, setOpen] = useState(true);
+  const [test, setTest] = useState(false);
 
   // Name: toggleMenu
   // Purpose: Toggles the menu open and closed when screen is small
@@ -9,6 +10,22 @@ const Navbar = ({ isLoggedIn }) => {
   // Returns: None
   const toggleMenu = () => {
     setOpen(!open);
+  };
+
+  useEffect(() => {
+    const jwtToken = localStorage.getItem("jwtToken");
+    setTest(jwtToken !== null);
+  }, []);
+
+  // Handle logout
+  const handleLogout = () => {
+    // Remove the JWT token from local storage
+    localStorage.removeItem("jwtToken");
+    // Set the test state to false, indicating user is not logged in
+    setTest(false);
+    emailCallback("");
+    // Redirect to the sign-in page or any other page as needed
+    window.location.href = "/signin";
   };
 
   return (
@@ -62,48 +79,51 @@ const Navbar = ({ isLoggedIn }) => {
         >
           <a
             className="px-2 py-2 text-sm text-gray-500 lg:px-6 md:px-3 hover:text-blue-600 lg:ml-auto"
-            href="/"
+            href="/about"
           >
             About
           </a>
-          <a
-            className="px-2 py-2 text-sm text-gray-500 lg:px-6 md:px-3 hover:text-blue-600"
-            href="/search"
-          >
-            Search
-          </a>
-          <a
-            className="px-2 py-2 text-sm text-gray-500 lg:px-6 md:px-3 hover:text-blue-600"
-            href="/saved"
-          >
-            Saved
-          </a>
-          <div className="inline-flex items-center gap-2 list-none lg:ml-auto">
-
-
-            {isLoggedIn ? null : <button
-              onClick={() => {
-                window.location.href = "signin";
-              }}
-              className="block px-4 py-2 mt-2 text-sm text-gray-500 md:mt-0 hover:text-blue-600 focus:outline-none focus:shadow-outline"
+          {test ? (
+            <a
+              className="px-2 py-2 text-sm text-gray-500 lg:px-6 md:px-3 hover:text-blue-600"
+              href="/trello"
             >
-              Sign in
-            </button>}
-
-            {/* Used to check login state */}
-            {isLoggedIn ? (
+              Trello Board
+            </a>
+          ) : null}
+          {test ? (
+            <a
+              className="px-2 py-2 text-sm text-gray-500 lg:px-6 md:px-3 hover:text-blue-600"
+              href="/inventory"
+            >
+              Inventory Manager
+            </a>
+          ) : null}
+          <div className="inline-flex items-center gap-2 list-none lg:ml-auto">
+            {test ? null : (
               <button
                 onClick={() => {
-                  
+                  window.location.href = "signin";
                 }}
+                className="block px-4 py-2 mt-2 text-sm text-gray-500 md:mt-0 hover:text-blue-600 focus:outline-none focus:shadow-outline"
+              >
+                Sign in
+              </button>
+            )}
+
+            {/* Used to check login state */}
+            {test ? (
+              <button
+                onClick={handleLogout}
                 className="inline-flex items-center justify-center px-4 py-2 text-sm font-semibold text-white bg-black rounded-full group focus:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 hover:bg-gray-700 active:bg-gray-800 active:text-white focus-visible:outline-black"
               >
                 Logout
               </button>
             ) : (
+              // Render the Sign up button or any other component as needed
               <button
                 onClick={() => {
-                  window.location.href = "signup";
+                  window.location.href = "/signup";
                 }}
                 className="inline-flex items-center justify-center px-4 py-2 text-sm font-semibold text-white bg-black rounded-full group focus:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 hover:bg-gray-700 active:bg-gray-800 active:text-white focus-visible:outline-black"
               >

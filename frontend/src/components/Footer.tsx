@@ -1,12 +1,6 @@
-import React from "react";
-import { IonIcon } from "@ionic/react";
-import { logoGithub, logoTwitter, logoInstagram, logoLinkedin } from "ionicons/icons";
-import { AccessibilityOutline } from 'react-ionicons'
-
 const Footer = () => {
   return (
     <footer className="bg-white flex justify-center items-center h-32">
-      {/* Footer content */}
       <div>
         <p className="text-base text-center text-gray-400">
           <span className="mx-auto mt-2 text-sm text-gray-500">

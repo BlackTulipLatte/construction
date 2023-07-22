@@ -1,10 +1,8 @@
-import React from "react";
 import { useState } from 'react';
 import axios from "axios";
 import { sha256 } from 'js-sha256';
-import { toast } from "react-toastify";
 
-const SignIn = ( {callBackLogin, callBackUserInfo} ) => {
+const SignIn = ({emailCallback}) => {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -12,39 +10,31 @@ const SignIn = ( {callBackLogin, callBackUserInfo} ) => {
   // handleSubmit: Handle form submission for sign in button
   // event: Form submission event
   // return: None
-  async function handleSubmit(event) {
-    
+  async function handleSubmit(event: { preventDefault: () => void; }) {
     // Prevent default form submission behavior
-    event.preventDefault(); 
-
-    // Hash the password
+    event.preventDefault();
     const hashedPassword = sha256(password);
-    console.log(hashedPassword);
 
-    // Send a GET request to the backend to check if the user exists
-    axios
-      .post("http://localhost:3000/login", { email, password: hashedPassword})
-      .then((response) => {
-        console.log(response.data);
-        // The response will contain { exists: true } if the email exists in the database,
-        // or { exists: false, message: 'User added to the database.' } if the email was added.
-        // Modify the state of the webpage to reflect loggedin status
-        if (response.data.exists) {
-          callBackLogin(true);
-          callBackUserInfo(email);
-          setPassword("");
-          setEmail("");
-          toast.success("Logged in successfully!");
-        }  
-        else{
-          toast.error("Incorrect email or password.");
-          setPassword("");
-          setEmail("");
-        } 
-      })
-      .catch((error) => {
-        console.error(error);
+    // Send a POST request to the backend to check if the user exists
+    try {
+      const response = await axios.post("http://localhost:3000/login", {
+        email,
+        password: hashedPassword,
       });
+
+      if (response.data.exists && response.data.token) {
+        localStorage.setItem("jwtToken", response.data.token);
+        emailCallback(email);
+        setPassword("");
+        setEmail("");
+        window.location.href = "/";  
+      } else {
+        setPassword("");
+        setEmail("");
+      }
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   return(
