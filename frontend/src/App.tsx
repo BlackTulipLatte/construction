@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom"; // Import useLocation hook
 import Navbar from "./components/Navbar";
 import LandingPage from "./pages/LandingPage";

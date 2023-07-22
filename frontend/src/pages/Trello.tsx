@@ -8,6 +8,7 @@ import {
 import CardItem from "../components/trello_page/CardItem";
 import BoardData from "../utils/board-data.json";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
+import axios from "axios";
 
 function createGuidId() {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
@@ -21,9 +22,23 @@ const Trello = () => {
   const [boardData, setBoardData] = useState(BoardData);
   const [showForm, setShowForm] = useState(false);
   const [selectedBoard, setSelectedBoard] = useState(0);
-
+  const [trelloData, setTrelloData] = useState([]);
+  
   useEffect(() => {
-    console.log("hello world");
+    const token = localStorage.getItem('jwtToken');
+
+    const verifyIdentity = async () => {
+      try {
+        const response = await axios.post("http://localhost:3000/verify", {
+          token: token
+        });
+  
+      } catch (error) {
+        console.error(error);
+      }  
+    }
+
+    verifyIdentity();
     setReady(true);
   }, []);
 
