@@ -9,5 +9,5 @@ Requirements: </br>
 A PostgreSql instance running on the specified port listed in /backend/db.js </br>
 
 How to run:</br>
-npm i </br>
-npm run dev </br>
+npm i (both in /backend and /frontend) </br>
+npm run dev (both in /backend and /frontend) </br>
