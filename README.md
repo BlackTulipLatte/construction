@@ -11,5 +11,6 @@ A PostgreSql instance running on the specified port listed in /backend/db.js </b
 How to run:</br>
 npm i (both in /backend and /frontend) </br>
 npm run dev (both in /backend and /frontend) </br>
+**The application will be running on http://127.0.0.1:5173/**</br>
 
 System design:</br>
