@@ -16,7 +16,7 @@ router.post("/", async (req, res) => {
 
   try {
     const queryCheck =
-      "SELECT COUNT(*) FROM accounts WHERE email = $1 AND password = $2";
+    "SELECT COUNT(*) FROM accounts WHERE email = $1 AND password = $2";
     const resultCheck = await client.query(queryCheck, [email, password]);
     const exists = resultCheck.rows[0].count > 0;
     console.log(exists);

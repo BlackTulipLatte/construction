@@ -134,7 +134,7 @@ router.post("/", async (req, res) => {
 
     const query = {
       text: 'UPDATE accounts SET "trelloData" = $1 WHERE email = $2',
-      values: [trelloData, email],
+      values: [testData, email],
     };
 
     const result = await client.query(query);
