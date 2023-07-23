@@ -100,7 +100,14 @@ const Navbar = ({ isLoggedIn, emailCallback }) => {
             </a>
           ) : null}
           <div className="inline-flex items-center gap-2 list-none lg:ml-auto">
-            {test ? null : (
+            {test ? <img
+              src="https://thumbs.dreamstime.com/b/default-avatar-profile-icon-vector-social-media-user-photo-183042379.jpg"
+              width="36"
+              height="36"
+              alt="profile"
+              className=" rounded-full "
+              onClick={() => {}}
+            /> : (
               <button
                 onClick={() => {
                   window.location.href = "signin";

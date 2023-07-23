@@ -11,8 +11,9 @@ import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import axios from "axios";
 
 function createGuidId() {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-    var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
+    var r = (Math.random() * 16) | 0,
+      v = c == "x" ? r : (r & 0x3) | 0x8;
     return v.toString(16);
   });
 }
@@ -23,23 +24,34 @@ const Trello = () => {
   const [showForm, setShowForm] = useState(false);
   const [selectedBoard, setSelectedBoard] = useState(0);
   const [trelloData, setTrelloData] = useState([]);
-  
+
   useEffect(() => {
-    const token = localStorage.getItem('jwtToken');
+    const token = localStorage.getItem("jwtToken");
 
     const verifyIdentity = async () => {
       try {
         const response = await axios.post("http://localhost:3000/verify", {
-          token: token
+          token: token,
         });
-  
+        return response.data.data.email;
       } catch (error) {
         console.error(error);
-      }  
-    }
+        return null; // Return a default value or handle the error appropriately
+      }
+    };
 
-    verifyIdentity();
-    setReady(true);
+    verifyIdentity()
+      .then((email) => {
+        console.log(email);
+        axios.post("http://localhost:3000/trello", {
+          email: email,
+        });
+        setReady(true);
+      })
+      .catch((error) => {
+        console.error(error);
+        setReady(true);
+      });
   }, []);
 
   const onDragEnd = (re) => {
@@ -60,27 +72,26 @@ const Trello = () => {
   };
 
   const onTextAreaKeyPress = (e) => {
-    if(e.keyCode === 13) //Enter
-    {
+    if (e.keyCode === 13) {
+      //Enter
       const val = e.target.value;
-      if(val.length === 0) {
+      if (val.length === 0) {
         setShowForm(false);
-      }
-      else {
-        const boardId = e.target.attributes['data-id'].value;
+      } else {
+        const boardId = e.target.attributes["data-id"].value;
         const item = {
           id: createGuidId(),
           title: val,
           priority: 0,
-          chat:0,
+          chat: 0,
           attachment: 0,
-          assignees: []
-        }
+          assignees: [],
+        };
         let newBoardData = boardData;
         newBoardData[boardId].items.push(item);
         setBoardData(newBoardData);
         setShowForm(false);
-        e.target.value = '';
+        e.target.value = "";
       }
     }
   };
@@ -141,18 +152,13 @@ const Trello = () => {
                 <div key={board.name}>
                   <Droppable droppableId={bIndex.toString()}>
                     {(provided, snapshot) => (
-                      <div
-                        {...provided.droppableProps}
-                        ref={provided.innerRef}
-                      >
+                      <div {...provided.droppableProps} ref={provided.innerRef}>
                         <div
                           className={`bg-gray-100 rounded-md shadow-md
                           flex flex-col relative overflow-hidden
                           ${snapshot.isDraggingOver && "bg-green-100"}`}
                         >
-                          <span
-                            className="w-full h-1 inset-x-0 top-0"
-                          ></span>
+                          <span className="w-full h-1 inset-x-0 top-0"></span>
                           <h4 className=" p-3 flex justify-between items-center mb-2">
                             <span className="text-2xl text-black">
                               {board.name}
@@ -160,8 +166,10 @@ const Trello = () => {
                             <DotsVerticalIcon className="w-5 h-5 text-gray-500" />
                           </h4>
 
-                          <div className="overflow-y-auto overflow-x-hidden h-auto"
-                          style={{maxHeight:'calc(100vh - 290px)'}}>
+                          <div
+                            className="overflow-y-auto overflow-x-hidden h-auto"
+                            style={{ maxHeight: "calc(100vh - 290px)" }}
+                          >
                             {board.items.length > 0 &&
                               board.items.map((item, iIndex) => {
                                 return (
@@ -175,25 +183,29 @@ const Trello = () => {
                               })}
                             {provided.placeholder}
                           </div>
-                          
-                          {
-                            showForm && selectedBoard === bIndex ? (
-                              <div className="p-3">
-                                <textarea className="border-gray-300 rounded focus:ring-purple-400 w-full" 
-                                rows={3} placeholder="Task info" 
+
+                          {showForm && selectedBoard === bIndex ? (
+                            <div className="p-3">
+                              <textarea
+                                className="border-gray-300 rounded focus:ring-purple-400 w-full"
+                                rows={3}
+                                placeholder="Task info"
                                 data-id={bIndex}
-                                onKeyDown={(e) => onTextAreaKeyPress(e)}/>
-                              </div>
-                            ): (
-                              <button
-                                className="flex justify-center items-center my-3 space-x-2 text-lg"
-                                onClick={() => {setSelectedBoard(bIndex); setShowForm(true);}}
-                              >
-                                <span>Add task</span>
-                                <PlusCircleIcon className="w-5 h-5 text-gray-500" />
-                              </button>
-                            )
-                          }
+                                onKeyDown={(e) => onTextAreaKeyPress(e)}
+                              />
+                            </div>
+                          ) : (
+                            <button
+                              className="flex justify-center items-center my-3 space-x-2 text-lg"
+                              onClick={() => {
+                                setSelectedBoard(bIndex);
+                                setShowForm(true);
+                              }}
+                            >
+                              <span>Add task</span>
+                              <PlusCircleIcon className="w-5 h-5 text-gray-500" />
+                            </button>
+                          )}
                         </div>
                       </div>
                     )}
