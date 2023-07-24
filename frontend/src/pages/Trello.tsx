@@ -7,6 +7,7 @@ import {
 } from "@heroicons/react/outline";
 import CardItem from "../components/trello_page/CardItem";
 import BoardData from "../utils/board-data.json";
+import Modal from "../components/trello_page/Modal";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import axios from "axios";
 
@@ -23,11 +24,13 @@ const Trello = () => {
   const [boardData, setBoardData] = useState(BoardData);
   const [showForm, setShowForm] = useState(false);
   const [selectedBoard, setSelectedBoard] = useState(0);
-  const [trelloData, setTrelloData] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [modalItem, setModalItem] = useState({});
+  const [email, setEmail] = useState("");
 
+  // Fetching data from the db
   useEffect(() => {
     const token = localStorage.getItem("jwtToken");
-
     const verifyIdentity = async () => {
       try {
         const response = await axios.post("http://localhost:3000/verify", {
@@ -36,23 +39,49 @@ const Trello = () => {
         return response.data.data.email;
       } catch (error) {
         console.error(error);
-        return null; // Return a default value or handle the error appropriately
+        return null;
       }
     };
 
     verifyIdentity()
-      .then((email) => {
-        console.log(email);
-        axios.post("http://localhost:3000/trello", {
-          email: email,
+      .then((verifiedEmail) => {
+        console.log(verifiedEmail);
+        setEmail(verifiedEmail);
+        axios.post("http://localhost:3000/getItems", {
+          email: verifiedEmail,
+        })
+        .then((response) => {
+          setBoardData(response.data); // Store the response data in the state variable
+          setReady(true);
+        })
+        .catch((error) => {
+          console.error(error);
+          setReady(true);
         });
-        setReady(true);
       })
       .catch((error) => {
         console.error(error);
         setReady(true);
       });
   }, []);
+
+  // Trying to add item to db
+  const itemTrelloCallback = (item) => {
+    setBoardData([...items, item]);
+  };
+
+  const modalItemCallback = (item) => {
+    setModalItem(item);
+  };
+
+  const modalCallback = (showModal) => {
+    setShowModal(showModal);
+  };
+
+  const handleDeleteItem = (itemToDelete) => {
+    const updatedItemList = items.filter((item) => item !== itemToDelete);
+    setBoardData(updatedItemList);
+  };
 
   const onDragEnd = (re) => {
     if (!re.destination) return;
@@ -97,126 +126,136 @@ const Trello = () => {
   };
 
   return (
-    <div className="p-10 flex flex-col h-screen">
-      {/* Board header */}
-      <div className="flex flex-initial justify-between">
-        <div className="flex items-center">
-          <h4 className="text-4xl text-black">Trello Board</h4>
+    <>
+      {showModal && (
+        <Modal
+          modalCallback={modalCallback}
+          itemUpdateCallback={itemTrelloCallback}
+        />
+      )}
+      <div className="p-10 flex flex-col h-screen">
+        {/* Board header */}
+        <div className="flex flex-initial justify-between">
+          <div className="flex items-center">
+            <h4 className="text-4xl text-black">Trello Board</h4>
+          </div>
+
+          <ul className="flex space-x-3">
+            <li>
+              <img
+                src="https://randomuser.me/api/portraits/men/75.jpg"
+                width="36"
+                height="36"
+                alt="profile"
+                className=" rounded-full "
+              />
+            </li>
+            <li>
+              <img
+                src="https://randomuser.me/api/portraits/men/76.jpg"
+                width="36"
+                height="36"
+                alt="profile"
+                className=" rounded-full "
+              />
+            </li>
+            <li>
+              <img
+                src="https://randomuser.me/api/portraits/men/78.jpg"
+                width="36"
+                height="36"
+                alt="profile"
+                className=" rounded-full "
+              />
+            </li>
+            <li>
+              <button
+                className="border border-dashed flex items-center w-9 h-9 border-gray-500 justify-center
+              rounded-full"
+              >
+                <PlusIcon className="w-5 h-5 text-gray-500" />
+              </button>
+            </li>
+          </ul>
         </div>
 
-        <ul className="flex space-x-3">
-          <li>
-            <img
-              src="https://randomuser.me/api/portraits/men/75.jpg"
-              width="36"
-              height="36"
-              alt="profile"
-              className=" rounded-full "
-            />
-          </li>
-          <li>
-            <img
-              src="https://randomuser.me/api/portraits/men/76.jpg"
-              width="36"
-              height="36"
-              alt="profile"
-              className=" rounded-full "
-            />
-          </li>
-          <li>
-            <img
-              src="https://randomuser.me/api/portraits/men/78.jpg"
-              width="36"
-              height="36"
-              alt="profile"
-              className=" rounded-full "
-            />
-          </li>
-          <li>
-            <button
-              className="border border-dashed flex items-center w-9 h-9 border-gray-500 justify-center
-              rounded-full"
-            >
-              <PlusIcon className="w-5 h-5 text-gray-500" />
-            </button>
-          </li>
-        </ul>
-      </div>
-
-      {/* Board columns */}
-      {ready && (
-        <DragDropContext onDragEnd={onDragEnd}>
-          <div className="grid grid-cols-4 gap-5 my-5">
-            {boardData.map((board, bIndex) => {
-              return (
-                <div key={board.name}>
-                  <Droppable droppableId={bIndex.toString()}>
-                    {(provided, snapshot) => (
-                      <div {...provided.droppableProps} ref={provided.innerRef}>
+        {/* Board columns */}
+        {ready && (
+          <DragDropContext onDragEnd={onDragEnd}>
+            <div className="grid grid-cols-4 gap-5 my-5">
+              {boardData.map((board, bIndex) => {
+                return (
+                  <div key={board.name}>
+                    <Droppable droppableId={bIndex.toString()}>
+                      {(provided, snapshot) => (
                         <div
-                          className={`bg-gray-100 rounded-md shadow-md
+                          {...provided.droppableProps}
+                          ref={provided.innerRef}
+                        >
+                          <div
+                            className={`bg-gray-100 rounded-md shadow-md
                           flex flex-col relative overflow-hidden
                           ${snapshot.isDraggingOver && "bg-green-100"}`}
-                        >
-                          <span className="w-full h-1 inset-x-0 top-0"></span>
-                          <h4 className=" p-3 flex justify-between items-center mb-2">
-                            <span className="text-2xl text-black">
-                              {board.name}
-                            </span>
-                            <DotsVerticalIcon className="w-5 h-5 text-gray-500" />
-                          </h4>
-
-                          <div
-                            className="overflow-y-auto overflow-x-hidden h-auto"
-                            style={{ maxHeight: "calc(100vh - 290px)" }}
                           >
-                            {board.items.length > 0 &&
-                              board.items.map((item, iIndex) => {
-                                return (
-                                  <CardItem
-                                    key={item.id}
-                                    data={item}
-                                    index={iIndex}
-                                    className="m-3"
-                                  />
-                                );
-                              })}
-                            {provided.placeholder}
-                          </div>
+                            <span className="w-full h-1 inset-x-0 top-0"></span>
+                            <h4 className=" p-3 flex justify-between items-center mb-2">
+                              <span className="text-2xl text-black">
+                                {board.name}
+                              </span>
+                              <DotsVerticalIcon className="w-5 h-5 text-gray-500" />
+                            </h4>
 
-                          {showForm && selectedBoard === bIndex ? (
-                            <div className="p-3">
-                              <textarea
-                                className="border-gray-300 rounded focus:ring-purple-400 w-full"
-                                rows={3}
-                                placeholder="Task info"
-                                data-id={bIndex}
-                                onKeyDown={(e) => onTextAreaKeyPress(e)}
-                              />
-                            </div>
-                          ) : (
-                            <button
-                              className="flex justify-center items-center my-3 space-x-2 text-lg"
-                              onClick={() => {
-                                setSelectedBoard(bIndex);
-                                setShowForm(true);
-                              }}
+                            <div
+                              className="overflow-y-auto overflow-x-hidden h-auto"
+                              style={{ maxHeight: "calc(100vh - 290px)" }}
                             >
-                              <span>Add task</span>
-                              <PlusCircleIcon className="w-5 h-5 text-gray-500" />
-                            </button>
-                          )}
+                              {board.items.length > 0 &&
+                                board.items.map((item, iIndex) => {
+                                  return (
+                                    <CardItem
+                                      key={item.id}
+                                      data={item}
+                                      index={iIndex}
+                                      className="m-3"
+                                    />
+                                  );
+                                })}
+                              {provided.placeholder}
+                            </div>
+
+                            {showForm && selectedBoard === bIndex ? (
+                              <div className="p-3">
+                                <textarea
+                                  className="border-gray-300 rounded focus:ring-purple-400 w-full"
+                                  rows={3}
+                                  placeholder="Task info"
+                                  data-id={bIndex}
+                                  onKeyDown={(e) => onTextAreaKeyPress(e)}
+                                />
+                              </div>
+                            ) : (
+                              <button
+                                className="flex justify-center items-center my-3 space-x-2 text-lg"
+                                onClick={() => {
+                                  setShowModal(true);
+                                }}
+                              >
+                                <span>Add task</span>
+                                <PlusCircleIcon className="w-5 h-5 text-gray-500" />
+                              </button>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    )}
-                  </Droppable>
-                </div>
-              );
-            })}
-          </div>
-        </DragDropContext>
-      )}
-    </div>
+                      )}
+                    </Droppable>
+                  </div>
+                );
+              })}
+            </div>
+          </DragDropContext>
+        )}
+      </div>
+    </>
   );
 };
 
