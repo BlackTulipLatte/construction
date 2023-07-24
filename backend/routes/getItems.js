@@ -13,7 +13,9 @@ router.post("/", async (req, res) => {
       values: [email],
     };
     const result = await pool.query(query);
-    res.json(result.rows[0].trelloData);
+    console.log(result.rows[0].trelloData)
+    res.json(result.rows[0].trelloData || []);
+
 
   } catch (error) {
     res.status(500).json({ error: 'Internal Server Error' });
