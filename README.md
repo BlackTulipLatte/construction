@@ -14,3 +14,7 @@ npm run dev (both in /backend and /frontend) </br>
 **The application will be running on http://127.0.0.1:5173/**</br>
 
 System design:</br>
+
+To do: </br>
+·Migrate from a local instance of PostgreSql to an AWS RDS PostgreSql instance to ensure uptime</br>
+·Implement websockets to allow users to edit in real-time with their collaborators</br>
