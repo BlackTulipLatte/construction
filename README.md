@@ -18,4 +18,5 @@ System design:</br>
 To do: </br>
 ·Migrate from a local instance of PostgreSql to an AWS RDS PostgreSql instance to ensure uptime</br>
 ·Implement websockets to allow users to edit in real-time with their collaborators</br>
+·Deploy</br>
 ·Cleanup codebase 
