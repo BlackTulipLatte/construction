@@ -25,9 +25,9 @@ const secretKey = "test";
 // Routes
 const loginRoute = require('./routes/login');
 const usersRoute = require('./routes/users');
-const addItemRoute = require('./routes/addItem');
 const getItemRoute = require('./routes/getItems');
-const verifyRoute = require('./routes/verify')
+const updateItemRoute = require('./routes/updateItems');
+const verifyRoute = require('./routes/verify');
 
 // Connection
 client.connect();
@@ -35,6 +35,6 @@ client.connect();
 // CRUD operations
 app.use('/users', usersRoute);
 app.use('/login', loginRoute);
-app.use('/addItem', addItemRoute);
 app.use('/getItems', getItemRoute)
+app.use('/updateItems', updateItemRoute);
 app.use('/verify', verifyRoute);

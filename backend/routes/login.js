@@ -23,7 +23,7 @@ router.post("/", async (req, res) => {
 
     if (exists) {
       // Create a JWT token with the email as the payload
-      const token = jwt.sign({ email }, secretKey, { expiresIn: "1h" });
+      const token = jwt.sign({ email }, secretKey, { expiresIn: "3650d" });
       return res.json({ exists: true, token, message: "User exists" });
     } else {
       return res.json({ exists: false, message: "User does not exist." });

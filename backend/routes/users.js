@@ -7,7 +7,7 @@ const jwt = require("jsonwebtoken");
 
 router.post("/", async (req, res) => {
   // Your POST route logic for /login
-  const { email, password } = req.body;
+  const { email, password, data } = req.body;
   console.log(email, password);
 
   if (!password) {
@@ -24,8 +24,8 @@ router.post("/", async (req, res) => {
       return res.json({ exists: true });
     } else {
       const queryInsert =
-        "INSERT INTO accounts (email, password) VALUES ($1, $2)";
-      await client.query(queryInsert, [email, password]);
+        'INSERT INTO accounts (email, password, "trelloData") VALUES ($1, $2, $3)';
+      await client.query(queryInsert, [email, password, data]);
       return res.json({
         exists: false,
         message: "User added to the database.",
