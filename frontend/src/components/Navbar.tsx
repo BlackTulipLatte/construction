@@ -1,13 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 const Navbar = ({ isLoggedIn, emailCallback }) => {
   const [open, setOpen] = useState(true);
   const [test, setTest] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownRef = useRef(null);
 
-  // Name: toggleMenu
-  // Purpose: Toggles the menu open and closed when screen is small
-  // Parameters: None
-  // Returns: None
+
+  const toggleDropdown = () => {
+    setShowDropdown(!showDropdown);
+  };
+
   const toggleMenu = () => {
     setOpen(!open);
   };
@@ -15,7 +18,22 @@ const Navbar = ({ isLoggedIn, emailCallback }) => {
   useEffect(() => {
     const jwtToken = localStorage.getItem("jwtToken");
     setTest(jwtToken !== null);
+
+    // Add event listener to detect clicks outside the dropdown
+    document.addEventListener("click", handleClickOutside);
+
+    return () => {
+      // Remove the event listener when the component unmounts
+      document.removeEventListener("click", handleClickOutside);
+    };
   }, []);
+
+  const handleClickOutside = (e) => {
+    // Check if the clicked element is outside the dropdown area
+    if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+      setShowDropdown(false);
+    }
+  };
 
   // Handle logout
   const handleLogout = () => {
@@ -100,14 +118,39 @@ const Navbar = ({ isLoggedIn, emailCallback }) => {
             </a>
           ) : null}
           <div className="inline-flex items-center gap-2 list-none lg:ml-auto">
-            {test ? <img
-              src="https://thumbs.dreamstime.com/b/default-avatar-profile-icon-vector-social-media-user-photo-183042379.jpg"
-              width="36"
-              height="36"
-              alt="profile"
-              className=" rounded-full "
-              onClick={() => {}}
-            /> : (
+            {test ? (
+              <div ref={dropdownRef} className="relative">
+                <img
+                  src="https://thumbs.dreamstime.com/b/default-avatar-profile-icon-vector-social-media-user-photo-183042379.jpg"
+                  width="36"
+                  height="36"
+                  alt="profile"
+                  className="rounded-full cursor-pointer"
+                  onClick={toggleDropdown}
+                />
+                {showDropdown && (
+                  <div className="absolute z-10 max-w-xs px-1 mt-3 transform -translate-x-1/2 left-1/2 sm:px-0">
+                    {/* Dropdown content */}
+                    <div className="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
+                      <div className="relative grid gap-6 px-2 py-2 bg-white sm:p-4">
+                        <a
+                          href="/changepassword"
+                          className="inline-flex items-start p-2 -m-2 transition duration-150 ease-in-out rounded-xl hover:bg-gray-50"
+                        >
+                          <div className=""></div>
+                          <div className="ml-2">
+                            <p className="text-sm font-medium text-black">
+                              Change password
+                            </p>
+                          </div>
+                        </a>
+                        {/* Add more dropdown items here */}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
               <button
                 onClick={() => {
                   window.location.href = "signin";

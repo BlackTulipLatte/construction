@@ -2,6 +2,7 @@ import React from "react";
 import { sha256 } from "js-sha256";
 import { useState } from "react";
 import axios from "axios";
+import TemplateData from "../utils/TemplateData.json";
 
 const SignUp = () => {
   const [email, setEmail] = useState("");
@@ -17,7 +18,7 @@ const SignUp = () => {
 
     // Post to see if email exists and if it doesnt then just add it to the database
     axios
-      .post("http://localhost:3000/users", { email, password: hashedPassword})
+      .post("http://localhost:3000/users", { email, password: hashedPassword, data: TemplateData})
       .then((response) => {
         setPassword("");
         setEmail("");

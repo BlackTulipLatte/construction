@@ -9,6 +9,7 @@ import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import Footer from "./components/Footer";
 import Error from "./pages/Error";
+import ChangePassword from "./pages/ChangePassword";
 import { Route, Routes } from "react-router-dom";
 import { ToastContainer } from 'react-toastify'
 import "react-toastify/dist/ReactToastify.css";
@@ -35,6 +36,7 @@ function App() {
           <Route path='/inventory' element={<ProtectedRoute element={<Inventory/>} />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/signin" element={<SignIn emailCallback={emailCallback}/>} />
+          <Route path="/changepassword" element={<ChangePassword />} />
           <Route path="/*" element={<Error />} />
         </Routes>
       </main>

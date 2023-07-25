@@ -11,17 +11,9 @@ import Modal from "../components/trello_page/Modal";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import axios from "axios";
 
-function createGuidId() {
-  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
-    var r = (Math.random() * 16) | 0,
-      v = c == "x" ? r : (r & 0x3) | 0x8;
-    return v.toString(16);
-  });
-}
-
 const Trello = () => {
   const [ready, setReady] = useState(false);
-  const [boardData, setBoardData] = useState(BoardData);
+  const [boardData, setBoardData] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [selectedBoard, setSelectedBoard] = useState(0);
   const [showModal, setShowModal] = useState(false);
@@ -47,17 +39,18 @@ const Trello = () => {
       .then((verifiedEmail) => {
         console.log(verifiedEmail);
         setEmail(verifiedEmail);
-        axios.post("http://localhost:3000/getItems", {
-          email: verifiedEmail,
-        })
-        .then((response) => {
-          setBoardData(response.data); // Store the response data in the state variable
-          setReady(true);
-        })
-        .catch((error) => {
-          console.error(error);
-          setReady(true);
-        });
+        axios
+          .post("http://localhost:3000/getItems", {
+            email: verifiedEmail,
+          })
+          .then((response) => {
+            setBoardData(response.data); // Store the response data in the state variable
+            setReady(true);
+          })
+          .catch((error) => {
+            console.error(error);
+            setReady(true);
+          });
       })
       .catch((error) => {
         console.error(error);
@@ -65,22 +58,47 @@ const Trello = () => {
       });
   }, []);
 
-  // Trying to add item to db
-  const itemTrelloCallback = (item) => {
-    setBoardData([...items, item]);
-  };
-
-  const modalItemCallback = (item) => {
-    setModalItem(item);
-  };
-
   const modalCallback = (showModal) => {
     setShowModal(showModal);
   };
 
-  const handleDeleteItem = (itemToDelete) => {
-    const updatedItemList = items.filter((item) => item !== itemToDelete);
-    setBoardData(updatedItemList);
+  function deleteItemById(itemId) {
+    // Create a shallow copy of the data array
+    const newData = [...boardData];
+  
+    // Loop through each board
+    for (let i = 0; i < newData.length; i++) {
+      const board = newData[i];
+      // Find the index of the item with the given ID in the board's items array
+      const itemIndex = board.items.findIndex((item) => item.id === itemId);
+      // If the item is found in the board, remove it from the items array
+      if (itemIndex !== -1) {
+        board.items.splice(itemIndex, 1);
+        break; // Exit the loop since the item has been deleted
+      }
+    }
+  
+    // Return the updated data
+    return newData;
+  }
+
+  const deleteCallBack = (id) => {
+    setBoardData(deleteItemById(id));
+    axiosPost();
+  };
+
+  const updateCallBack = (item) => {
+    const newData = [...boardData];
+    for (let i = 0; i < newData.length; i++) {
+      const board = newData[i];
+      const itemIndex = board.items.findIndex((i) => i.id === item.id);
+      if (itemIndex !== -1) {
+        board.items[itemIndex] = item;
+        break;
+      }
+    }
+    setBoardData(newData);
+    axiosPost();
   };
 
   const onDragEnd = (re) => {
@@ -98,41 +116,33 @@ const Trello = () => {
       dragItem
     );
     setBoardData(newBoardData);
+    axiosPost();
   };
 
-  const onTextAreaKeyPress = (e) => {
-    if (e.keyCode === 13) {
-      //Enter
-      const val = e.target.value;
-      if (val.length === 0) {
-        setShowForm(false);
-      } else {
-        const boardId = e.target.attributes["data-id"].value;
-        const item = {
-          id: createGuidId(),
-          title: val,
-          priority: 0,
-          chat: 0,
-          attachment: 0,
-          assignees: [],
-        };
-        let newBoardData = boardData;
-        newBoardData[boardId].items.push(item);
-        setBoardData(newBoardData);
-        setShowForm(false);
-        e.target.value = "";
-      }
-    }
+  const newItem = (item) => {
+    const boardId = selectedBoard;
+    let newBoardData = boardData;
+    newBoardData[boardId].items.push(item);
+    setBoardData(newBoardData);
+    axiosPost();
   };
+
+  const axiosPost = () => {
+    axios
+          .post("http://localhost:3000/updateItems", {
+            email: email,
+            trelloData: boardData,
+          })
+          .then((response) => {
+            console.log(response);
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+  }
 
   return (
     <>
-      {showModal && (
-        <Modal
-          modalCallback={modalCallback}
-          itemUpdateCallback={itemTrelloCallback}
-        />
-      )}
       <div className="p-10 flex flex-col h-screen">
         {/* Board header */}
         <div className="flex flex-initial justify-between">
@@ -141,33 +151,6 @@ const Trello = () => {
           </div>
 
           <ul className="flex space-x-3">
-            <li>
-              <img
-                src="https://randomuser.me/api/portraits/men/75.jpg"
-                width="36"
-                height="36"
-                alt="profile"
-                className=" rounded-full "
-              />
-            </li>
-            <li>
-              <img
-                src="https://randomuser.me/api/portraits/men/76.jpg"
-                width="36"
-                height="36"
-                alt="profile"
-                className=" rounded-full "
-              />
-            </li>
-            <li>
-              <img
-                src="https://randomuser.me/api/portraits/men/78.jpg"
-                width="36"
-                height="36"
-                alt="profile"
-                className=" rounded-full "
-              />
-            </li>
             <li>
               <button
                 className="border border-dashed flex items-center w-9 h-9 border-gray-500 justify-center
@@ -202,7 +185,6 @@ const Trello = () => {
                               <span className="text-2xl text-black">
                                 {board.name}
                               </span>
-                              <DotsVerticalIcon className="w-5 h-5 text-gray-500" />
                             </h4>
 
                             <div
@@ -216,6 +198,8 @@ const Trello = () => {
                                       key={item.id}
                                       data={item}
                                       index={iIndex}
+                                      deleteItem={deleteCallBack}
+                                      updateItem={updateCallBack}
                                       className="m-3"
                                     />
                                   );
@@ -223,20 +207,18 @@ const Trello = () => {
                               {provided.placeholder}
                             </div>
 
-                            {showForm && selectedBoard === bIndex ? (
-                              <div className="p-3">
-                                <textarea
-                                  className="border-gray-300 rounded focus:ring-purple-400 w-full"
-                                  rows={3}
-                                  placeholder="Task info"
-                                  data-id={bIndex}
-                                  onKeyDown={(e) => onTextAreaKeyPress(e)}
-                                />
-                              </div>
+                            {showModal && selectedBoard === bIndex ? (
+                              <Modal
+                                modalCallback={modalCallback}
+                                itemUpdateCallback={newItem}
+                                addOrEdit={"Add"}
+                              />
                             ) : (
                               <button
                                 className="flex justify-center items-center my-3 space-x-2 text-lg"
-                                onClick={() => {
+                                onClick={(e) => {
+                                  console.log(e);
+                                  setSelectedBoard(bIndex);
                                   setShowModal(true);
                                 }}
                               >
